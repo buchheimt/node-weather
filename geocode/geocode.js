@@ -14,8 +14,8 @@ const geocodeAddress = (address, callback) => {
     } else if (body.status === 'OK') {
       callback(undefined, {
         address: body.results[0].formatted_address,
-        latitude: body.results[0].geometry.location.lat,
-        longitude: body.results[0].geometry.location.lng
+        lat: body.results[0].geometry.location.lat,
+        long: body.results[0].geometry.location.lng
       });
     }
   });

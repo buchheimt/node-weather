@@ -1,37 +1,32 @@
-// const yargs = require('yargs');
-// const geocode = require('./geocode/geocode');
+require('dotenv').config();
 
-// const argv = yargs
-//   .options({
-//     a: {
-//       demand: true,
-//       alias: 'address',
-//       describe: 'Address to fetch weather for',
-//       string: true
-//     }
-//   })
-//   .help()
-//   .alias('help', 'h')
-//   .argv;
+const yargs = require('yargs');
+const geocode = require('./geocode/geocode');
+const weather = require('./weather/weather');
 
-// geocode.geocodeAddress(argv.address, (err, results) => {
-//   if (err) {
-//     console.log(err);
-//   } else {
-//     console.log(JSON.stringify(results, undefined, 2));
-//   }
-// });
+const argv = yargs
+  .options({
+    a: {
+      demand: true,
+      alias: 'address',
+      describe: 'Address to fetch weather for',
+      string: true
+    }
+  })
+  .help()
+  .alias('help', 'h')
+  .argv;
 
-const request = require('request');
-
-request({
-  url: `https://api.darksky.net/forecast/API_SECRET/33.1506744,-96.82361159999999`,
-  json: true
-}, (err, res, body) => {
-  if (err || res.statusCode !== 200) {
-    console.log('Unable to fetch weather');
+geocode.geocodeAddress(argv.address, (geoErr, geoRes) => {
+  if (geoErr) {
+    console.log(geoErr);
   } else {
-    console.log(body.currently.temperature);
+    weather.getWeather(geoRes.lat, geoRes.long, (weatherErr, weatherRes) => {
+      if (weatherErr) {
+        console.log(weatherErr);
+      } else {
+        console.log(`Right now in ${geoRes.address} it is ${weatherRes.temp} F, but it feels like ${weatherRes.feelsLike} F`);
+      }
+    });
   }
 });
-
